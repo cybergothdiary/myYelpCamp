@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update a campground</title>
+    <style>
+        body { font-size: 1.5rem; font-family: 'Roboto', sans-serif; }
+        a { text-decoration: none; color: rgb(93, 0, 160); }
+        form { display: inline-block; }
+        .action-btn { padding: .3em 1em; background-color: rgb(156, 156, 156); display: inline-block; color: #fff; margin-top: 10px; border-radius: 5px; font-size: 1.5rem; border: none; cursor: pointer; margin-right: .3em;}
+        span { color:rgb(93, 0, 160); }
+        input, button { font-size: 1.3rem; }
+        input { outline: none; padding: 5px; }
+    </style>
+</head>
+<body>
+    <a href="/campgrounds/<%= campground._id %>">Back to the Campground</a>
+    <h3>Update <span>«<%= campground.title %>»</span> Campground:</h3>
+
+    <form action="/campgrounds/<%= campground._id %>?_method=PATCH" method="post">
+        <input type="text" name="title" placeholder="Title..." value="<%= campground.title %>" required>
+        <input type="text" name="location" placeholder="Location..." value="<%= campground.location %>" required>
+        <input type="number" name="price" step="0.01" placeholder="Price..." value="<%= campground.price %>" required>
+        <button>Update Data</button>
+    </form>
+</body>
+</html>
