@@ -1,31 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= campground.title %></title>
-    <style>
-        body { font-size: 1.5rem; font-family: 'Roboto', sans-serif; }
-        a { text-decoration: none; color: rgb(93, 0, 160); }
-        form { display: inline-block; }
-        .action-btn { padding: .3em 1em; display: inline-block; color: #fff; margin-top: 10px; border-radius: 5px; font-size: 1.5rem; border: none; cursor: pointer; margin-right: .3em;}
-        .delete { background: linear-gradient(rgb(156, 156, 156), rgba(255, 0, 0, .8)); }
-        .update { background: linear-gradient(rgb(156, 156, 156), rgba(0, 255, 0, .7)); }
-    </style>
-</head>
-<body>
-    <a href="/campgrounds">Back to Campgrounds</a>
-    <div>
-        <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="post">
-            <button class="action-btn delete">Delete</button>
-        </form>
-        
-        <a href="/campgrounds/<%= campground._id %>/update" class="action-btn update">Update</a>
-    </div>
-    <ul>
-        <li><b>Title:</b> <%= campground.title %></li>
-        <li><b>Location:</b> <%= campground.location %></li>
-        <li><b>Price:</b> $<%= campground.price %></li>
-    </ul>
-</body>
-</html>
+<% layout('layouts/boilerplate') %>
+<a href="/campgrounds">Back to Campgrounds</a>
+<div>
+    <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="post">
+        <button class="action-btn delete">Delete</button>
+    </form>
+    
+    <a href="/campgrounds/<%= campground._id %>/update" class="action-btn update">Update</a>
+</div>
+<ul>
+    <li><b>Title:</b> <%= campground.title %></li>
+    <li><b>Location:</b> <%= campground.location %></li>
+    <li><b>Price:</b> $<%= campground.price %></li>
+    <img src="<%= campground.image %>">
+    <li><b>Description:</b> <%= campground.description %></li>
+</ul>

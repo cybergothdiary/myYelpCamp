@@ -1,21 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Campgrounds</title>
-    <style>
-        body { font-size: 1.5rem; font-family: 'Roboto', sans-serif; }
-        a { text-decoration: none; color: rgb(93, 0, 160); }
-    </style>
-</head>
-<body>
-    <a href="/campgrounds/add">+ Add a new one</a>
-    <h3>Here are our campgrounds:</h3>
-    <ul>
-        <% for (let campground of campgrounds) { %>
-            <li><a href="/campgrounds/<%= campground._id %>"><%= campground.title %></a></li>
-        <% } %>
-    </ul>
-</body>
-</html>
+<% layout('layouts/boilerplate') %>
+<a href="/campgrounds/add">+ Add a new one</a>
+<h3>Here are our campgrounds:</h3>
+<ul>
+    <% for (let campground of campgrounds) { %>
+        <li><a href="/campgrounds/<%= campground._id %>"><%= campground.title %></a></li>
+    <% } %>
+</ul>

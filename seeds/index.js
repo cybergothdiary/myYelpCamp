@@ -14,12 +14,14 @@ const seedDatabase = async () => {
         .then(() => console.log('Successfully wiped'))
         .catch((err) => console.log('Not deleted, Sorry! Error!', err));
 
-    for (let i = 0; i < 23; i++) {
+    for (let i = 0; i < 35; i++) {
         const rIndex = Math.floor(Math.random() * 1000);
         const newCamp = new Campground({
             title: `${ rArray(descriptors)} ${rArray(places) }`,
             price: (Math.random() * 450 + 100).toFixed(2),
-            location: `${ cities[rIndex].city}, ${cities[rIndex].state }`
+            location: `${ cities[rIndex].city}, ${cities[rIndex].state }`,
+            image: 'https://source.unsplash.com/collection/483251',
+            description: 'Lorem-lorem, show me some magic tricks...'
         });
 
         await newCamp.save();
