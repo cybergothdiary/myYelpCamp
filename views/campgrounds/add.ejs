@@ -1,9 +1,43 @@
 <% layout('layouts/boilerplate') %>
-<a href="/campgrounds">Back to Campgrounds</a>
-<h3>Add a new campground to our Database:</h3>
-<form action="/campgrounds" method="post">
-    <input type="text" placeholder="Title..." name="campground[title]" required>
-    <input type="text" placeholder="Location..." name="campground[location]" required>
-    <input type="number" step="0.01" placeholder="Price" name="campground[price]" required>
-    <button>Submit Data</button>
-</form>
+<a class="btn btn-secondary btn-sm offset-2" href="/campgrounds">&larr; Back to Campgrounds</a>
+<div class="row">
+	<h3 class="text-center mb-4">Add a new campground to our Database:</h3>
+	<div class="col-6 offset-3">
+		<form action="/campgrounds" method="post" class="validation-form" novalidate>
+			<div class="mb-2">
+				<label class="form-label" for="title">Title:</label>
+				<input type="text" class="form-control" id="title" name="campground[title]" required>
+				<div class="invalid-feedback">Title is required</div>
+			</div>
+
+			<div class="mb-2">
+				<label class="form-label" for="price">Price:</label>
+				<div class="input-group">
+					<span class="input-group-text" id="basic-addon1">$</span>
+					<input type="number" class="form-control" id="price" placeholder="0.00" step="0.01" name="campground[price]" required>
+					<div class="invalid-feedback">No publishing without a price...</div>
+				</div>
+			</div>
+
+			<div class="mb-2">
+				<label class="form-label" for="location">Location:</label>
+				<input type="text" class="form-control" id="location" name="campground[location]" required>
+				<div class="invalid-feedback">Location is required</div>
+			</div>
+
+			<div class="mb-2">
+				<label class="form-label" for="image">Image URL:</label>
+				<input type="text" class="form-control" id="image" name="campground[image]" required>
+				<div class="invalid-feedback">Campground picture is required</div>
+			</div>
+
+			<div class="mb-2">
+				<label class="form-label" for="description">Description:</label>
+				<input type="text" class="form-control" id="description" name="campground[description]" required>
+				<div class="invalid-feedback">Description is required</div>
+			</div>
+			
+			<button class="btn btn-warning mt-3">Submit Data</button>
+		</form>
+	</div>
+</div>

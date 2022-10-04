@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const Campground = require('./models/campground');
+const ExpressError = require('./utils/ExpressError');
+const catchAsyncErr = require('./utils/catchAsyncErr');
+const {campgroundSchema} = require('./joi-schemas');
 mongoose.connect('mongodb://localhost:27017/myYelpCamp')
     .then(() => console.log('MongoDB: Running!'))
     .catch(err => console.log('MongoDB: Error!', err));
@@ -17,6 +20,15 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 
+const validateCampground = (req, res, next) => {
+    const {error} = campgroundSchema.validate(req.body);
+    if (error) {
+        throw new ExpressError(error.details.map(el => el.message).join(','), 404);
+    } else {
+        next();
+    }
+}
+
 app.get('/', (req, res) => res.render('home'));
 
 app.get('/campgrounds', async (req, res) => {
@@ -26,34 +38,46 @@ app.get('/campgrounds', async (req, res) => {
 
 app.get('/campgrounds/add', (req, res) => res.render('campgrounds/add'));
 
-app.post('/campgrounds', async (req, res) => {
+app.post('/campgrounds', validateCampground, catchAsyncErr(async (req, res, next) => {
     const newCampground = new Campground(req.body.campground);
     await newCampground.save();
     res.redirect(`/campgrounds/${newCampground._id}`);
-});
+}));
 
-app.get('/campgrounds/:id', async (req, res) => {
+app.get('/campgrounds/:id', catchAsyncErr(async (req, res) => {
     const {id} = req.params;
     const campground = await Campground.findById(id);
     res.render('campgrounds/campground', {campground});
-});
+}));
 
-app.get('/campgrounds/:id/update', async (req, res) => {
+app.get('/campgrounds/:id/update', catchAsyncErr(async (req, res) => {
     const {id} = req.params;
     const campground = await Campground.findById(id);
     res.render('campgrounds/update', {campground});
-});
+}));
 
-app.patch('/campgrounds/:id', async (req, res) => {
+app.patch('/campgrounds/:id', validateCampground, catchAsyncErr(async (req, res, next) => {
     const {id} = req.params;
-    await Campground.findByIdAndUpdate(id, req.body);
+    await Campground.findByIdAndUpdate(id, req.body.campground, {runValidators: true});
     res.redirect(`/campgrounds/${id}`);
-})
+}));
 
-app.delete('/campgrounds/:id', async (req, res) => {
+app.delete('/campgrounds/:id', catchAsyncErr(async (req, res) => {
     const {id} = req.params;
     await Campground.findByIdAndDelete(id)
     res.redirect('/campgrounds');
-})
+}));
+
+// Wrong /path error handler
+app.all('*', (req, res, next) => {
+    next(new ExpressError('404: Not Found', 404));
+});
+
+// Async error handler
+app.use((err, req, res, next) => {
+    const { status = 500 } = err;
+    if (!err.message) err.message = 'Sorry, an unexpected error...';
+    res.status(status).render('error', {err});
+});
 
 app.listen(3000, () => console.log('Running on port 3000!'));

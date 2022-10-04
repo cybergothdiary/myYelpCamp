@@ -18,7 +18,7 @@ const seedDatabase = async () => {
         const rIndex = Math.floor(Math.random() * 1000);
         const newCamp = new Campground({
             title: `${ rArray(descriptors)} ${rArray(places) }`,
-            price: (Math.random() * 450 + 100).toFixed(2),
+            price: Math.floor((Math.random() * 50 + 20)),
             location: `${ cities[rIndex].city}, ${cities[rIndex].state }`,
             image: 'https://source.unsplash.com/collection/483251',
             description: 'Lorem-lorem, show me some magic tricks...'
