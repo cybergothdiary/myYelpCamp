@@ -4,9 +4,10 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const Campground = require('./models/campground');
+const Review = require('./models/review');
 const ExpressError = require('./utils/ExpressError');
 const catchAsyncErr = require('./utils/catchAsyncErr');
-const {campgroundSchema} = require('./joi-schemas');
+const { campgroundSchema, reviewSchema } = require('./joi-schemas');
 mongoose.connect('mongodb://localhost:27017/myYelpCamp')
     .then(() => console.log('MongoDB: Running!'))
     .catch(err => console.log('MongoDB: Error!', err));
@@ -27,9 +28,19 @@ const validateCampground = (req, res, next) => {
     } else {
         next();
     }
-}
+};
+const validateReview = (req, res, next) => {
+    const {error} = reviewSchema.validate(req.body);
+    if (error) {
+        throw new ExpressError(error.details.map(el => el.message).join(','), 404);
+    } else {
+        next();
+    }
+};
 
 app.get('/', (req, res) => res.render('home'));
+
+// --- CAMPGROUNDS
 
 app.get('/campgrounds', async (req, res) => {
     const campgrounds = await Campground.find({});
@@ -46,7 +57,7 @@ app.post('/campgrounds', validateCampground, catchAsyncErr(async (req, res, next
 
 app.get('/campgrounds/:id', catchAsyncErr(async (req, res) => {
     const {id} = req.params;
-    const campground = await Campground.findById(id);
+    const campground = await Campground.findById(id).populate('reviews');
     res.render('campgrounds/campground', {campground});
 }));
 
@@ -62,10 +73,29 @@ app.patch('/campgrounds/:id', validateCampground, catchAsyncErr(async (req, res,
     res.redirect(`/campgrounds/${id}`);
 }));
 
-app.delete('/campgrounds/:id', catchAsyncErr(async (req, res) => {
+app.delete('/campgrounds/:id', catchAsyncErr(async (req, res, next) => {
     const {id} = req.params;
     await Campground.findByIdAndDelete(id)
     res.redirect('/campgrounds');
+}));
+
+// --- REVIEWS
+
+app.post('/campgrounds/:id/review', validateReview, catchAsyncErr(async (req, res, next) => {
+    const {id} = req.params;
+    const campground = await Campground.findById(id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${id}`);
+}));
+
+app.delete('/campgrounds/:id/reviews/:reviewID', catchAsyncErr(async (req, res, next) => {
+    const {id, reviewID} = req.params;
+    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewID } });
+    await Review.findByIdAndDelete(reviewID);
+    res.redirect(`/campgrounds/${id}`);
 }));
 
 // Wrong /path error handler
